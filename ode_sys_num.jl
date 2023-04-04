@@ -1,6 +1,7 @@
 using ModelingToolkit
-using DifferentialEquations
-import Plots.plot, Plots.savefig
+using OrdinaryDiffEq, DifferentialEquations
+import Plots.plot, Plots.savefig, Plots.plotlyjs
+plotlyjs()
 
 # define parameters, variables, and d/dt operator
 @parameters t
