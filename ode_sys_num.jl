@@ -40,5 +40,6 @@ plot(sol.t, [solution[:,1] solution[:,2] solution[:,3]],
 savefig("ode_sys_num_subplots")
 # 3D plot
 plot(solution[:,1], solution[:,2], solution[:,3], label="(x,y,z)",
-     linewidth=2, title="3D space solution");
+     linewidth=2, title="3D space solution", xlabel="x",
+     ylabel="y", zlabel="z");
 savefig("ode_sys_num_3D")
