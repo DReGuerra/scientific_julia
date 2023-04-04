@@ -11,6 +11,6 @@ This is repository contains a series of scripts that explore various Julia packa
 
 ---
 ## Core Contents
-1. `ode_sys_num.jl`
-2. `ode_sys_param.jl`
-3. `ode_sys_param_opt.jl`
+1. `ode_sys_sym.jl` $\rightarrow$ solve a system of 3 ODEs with symbolic packages
+2. `ode_sys_num_param.jl` $\rightarrow$ solve a system of 3 ODEs with one parameter using numerical definition
+3. `ode_sys_num_param_opt.jl` $\rightarrow$ solve for an optimal value of the parameter from (2) using an objective function
