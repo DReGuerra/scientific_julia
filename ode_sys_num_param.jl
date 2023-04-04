@@ -29,5 +29,5 @@ for ps in p
 
     plot(sol.t, [solution[:,1] solution[:,2] solution[:,3]],
          linewidth=2, label=["x" "y" "z"], title="p=$ps", xlabel="t")
-    savefig("ode_sys_num_param_solutions_p=$ps")
+    savefig("ode_sys_num_param_solutions_p_$ps")
 end
