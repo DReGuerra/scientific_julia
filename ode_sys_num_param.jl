@@ -1,3 +1,6 @@
+# Andre Guerra
+# andre.guerra@mail.mcgill.ca
+#
 # This is an expansion on the file ode_sys_sym.jl available in this repo.
 # In this script we define the system using a function (not symbolic) which
 # can still be used by the package DifferentialEquations.jl

@@ -1,5 +1,8 @@
-# In this script we solve a system of 3 ODEs using the symbolic packages
-# available in Julia
+# Andre Guerra
+# andre.guerra@mail.mcgill.ca
+#
+# In this script we solve a system of 3 ODEs using some symbolic packages
+# available in julia
 
 using ModelingToolkit
 using OrdinaryDiffEq, DifferentialEquations
