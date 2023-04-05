@@ -1,5 +1,5 @@
 # scientific_julia
-Exploring julia packages for data science and other numberical modeling applications.
+Exploring julia packages for data science and other numerical modeling applications.
 
 André Guerra \
 April, 2023 \
