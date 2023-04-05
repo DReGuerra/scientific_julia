@@ -18,5 +18,5 @@ This repository contains a series of scripts that explore various julia packages
 ## References
 1. [ModelingToolkit.jl](https://docs.sciml.ai/ModelingToolkit/stable/)
 2. [DifferentailEquations.jl](https://docs.sciml.ai/DiffEqDocs/stable/)
-3. [Plots](https://docs.juliaplots.org/stable/)
+3. [Plots.jl](https://docs.juliaplots.org/stable/)
 4. [MATLAB example used for the ODE system](https://www3.nd.edu/~nancy/Math20750/Demos/3dplots/dim3system.html)
