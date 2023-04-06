@@ -1,10 +1,9 @@
 # Andre Guerra
 # andre.guerra@mail.mcgill.ca
 #
-# This is an expansion on the file ode_sys_num_param.jl available in this repo.
-# Like in the previous script, we define here the system using a function
-# (not symbolic) which can still be used by the package 
-# DifferentialEquations.jl
+# This is an expansion on ode_sys_num_opt_param.jl available in this repo.
+# As in the previous script, we define here the system using a function
+# (not symbolic) which can still use the package DifferentialEquations.jl.
 
 using DifferentialEquations, RecursiveArrayTools, DiffEqParamEstim
 using Optimization, ForwardDiff, OptimizationOptimJL, OptimizationBBO
