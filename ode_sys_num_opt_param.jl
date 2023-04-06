@@ -37,7 +37,7 @@ savefig("ode_sys_num_opt_param_solution_p_$ps")
 
 # we generate synthetic data using this solution (p value above)
 t = collect(range(0,stop=1.5,length=200))
-randomized = VectorOfArray([(sol(t[i]) + .01randn(3)) for i in 1:length(t)])
+randomized = VectorOfArray([(sol(t[i]) + .01randn(3)) for i in eachindex(t)])
 data = convert(Array,randomized)
 
 # redefine the prob with a new parameter
