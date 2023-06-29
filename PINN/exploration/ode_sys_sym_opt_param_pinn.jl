@@ -3,7 +3,7 @@
 
 ## Packages
 using Pkg
-Pkg.activate("../../PINN")
+Pkg.activate("../PINN")
 
 using NeuralPDE, Lux, ModelingToolkit, Optimization, OptimizationOptimJL, OrdinaryDiffEq, Plots, DifferentialEquations, Zygote
 import ModelingToolkit: Interval, infimum, supremum
@@ -34,9 +34,9 @@ dt = 0.01
 input_ = length(domains)
 n = 24
 
-chain1 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dx/dt
-chain2 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dy/dt
-chain3 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dz/dt
+chain1 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dx/dt
+chain2 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dy/dt
+chain3 = Lux.Chain(Dense(input_, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, n, Lux.σ), Dense(n, 1)) # dz/dt
 
 ## Generating Training Data
 function sys!(du, u, p, t)          
@@ -60,11 +60,20 @@ ts = [infimum(d.domain):dt:supremum(d.domain) for d in domains][1]  # domains pr
 data = getData(sol, ts)
 
 (u_, t_) = data
-len = length(data[2])
 
-plot(t_', u_[1, :], linewidth = 2, label = "x", title = "p=$ps", xlabel = "t")
-plot!(t_', u_[2, :], label = "y")
-plot!(t_', u_[3, :], label = "z")
+#idxs = sample(axes(u_', 1), 5, replace=false, ordered=true)
+#u_sparse = u_'[idxs, :]'
+#t_sparse = t_'[idxs, :]
+len = length(data[2])
+u_sparse = u_'[1, :]
+t_sparse = t_'[1, :]
+
+#plot(t_sparse, u_sparse[1, :], linewidth = 2, label = "x", title = "p=$ps", xlabel = "t")
+#plot!(t_sparse, u_sparse[2, :], label = "y")
+#plot!(t_sparse, u_sparse[3, :], label = "z")
+scatter(t_sparse, u_sparse[1, :], label = "x", title = "p=$ps", xlabel = "t", xlims=(0, 5.0), ylims=(0, 3))
+scatter!(t_sparse, u_sparse[2, :], label = "y")
+scatter!(t_sparse, u_sparse[3, :], label = "z")
 savefig("ode_sys_sym_opt_param_pinn.png")
 
 ## Creating Additional Loss Function
@@ -90,12 +99,16 @@ bcs_inner_loss_functions = sym_prob.loss_functions.bc_loss_functions
 # Store callback frames in animation
 a = Animation()
 
+# Storing losses
+losses = []
+pde_losses = []
+bcs_losses = []
+
 callback = function(p, l)
-    # Print losses
-    # println("loss: ", l)
-    # println("pde_losses: ", map(l_ -> l_(p), pde_inner_loss_functions))
-    # println("bcs_losses: ", map(l_ -> l_(p), bcs_inner_loss_functions))
-    # println()
+    # Visualize losses
+    push!(losses, l)
+    push!(pde_losses, map(l_ -> l_(p), pde_inner_loss_functions))
+    push!(bcs_losses, map(l_ -> l_(p), bcs_inner_loss_functions))
 
     # # Visualizing training
     weights = [p.depvar.x, p.depvar.y, p.depvar.z]
@@ -108,6 +121,26 @@ end
 
 res = Optimization.solve(prob_, BFGS(); callback = callback, maxiters = 5000)
 p_ = res.u[end-5:end] # Last layer is optimized parameter
+
+pde_losses_x = hcat(pde_losses...)[1, :]
+pde_losses_y = hcat(pde_losses...)[2, :]
+pde_losses_z = hcat(pde_losses...)[3, :]
+
+bcs_losses_x = hcat(bcs_losses...)[1, :]
+bcs_losses_y = hcat(bcs_losses...)[2, :]
+bcs_losses_z = hcat(bcs_losses...)[3, :]
+
+# Plot loss on log scale
+plot(1:length(losses), log10.(losses), label = "Total Loss", xlabel="Iteration", ylabel="log10(Loss)")
+plot!(1:length(losses), log10.(pde_losses_x), label = "PDE Loss x")
+plot!(1:length(losses), log10.(pde_losses_y), label = "PDE Loss y")
+plot!(1:length(losses), log10.(pde_losses_z), label = "PDE Loss z")
+
+# Plot bcs Loss
+plot!(1:length(losses), log10.(bcs_losses_x), label = "BC Loss x")
+plot!(1:length(losses), log10.(bcs_losses_y), label = "BC Loss y")
+plot!(1:length(losses), log10.(bcs_losses_z), label = "BC Loss z")
+savefig("ode_sys_sym_opt_param_pinn_loss.png")
 
 gif(a, "ode_sys_sym_opt_param_pinn_fitting.gif")
 println(p_)
@@ -122,12 +155,12 @@ savefig("ode_sys_sym_opt_param_pinn_pred.png")
 
 ## Extrapolation
 # Remaking problem on tspan (0.0, 10.0)
-newts = (0.0, 10.0)
+newts = (0.0, 20.0)
 newprob = remake(prob, tspan=newts)
 newsol = solve(newprob, Tsit5(), dt = 0.1)
 
 # Generating predictions for new tspan
-domain_test = [t ∈ Interval(0, 10.0)]
+domain_test = [t ∈ Interval(0, 20.0)]
 ts_test = [infimum(d.domain):(dt / 10):supremum(d.domain) for d in domain_test][1]
 
 # PINN Prediction
